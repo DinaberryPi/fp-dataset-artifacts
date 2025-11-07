@@ -6,7 +6,7 @@ import re
 print("Loading predictions...")
 predictions = []
 # Update this path to wherever your eval_predictions.jsonl file is
-predictions_path = r'c:\Users\dinah\Downloads\eval_predictions.jsonl'
+predictions_path = 'trained_model/eval_predictions.jsonl'
 with open(predictions_path, 'r', encoding='utf-8') as f:
     for line in f:
         predictions.append(json.loads(line))
