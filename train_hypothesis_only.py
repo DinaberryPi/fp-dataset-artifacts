@@ -75,12 +75,10 @@ def main():
     # Training arguments
     training_args = TrainingArguments(
         output_dir=output_dir,
-        do_train=True,
-        do_eval=True,
         num_train_epochs=num_train_epochs,
         per_device_train_batch_size=per_device_train_batch_size,
         per_device_eval_batch_size=per_device_train_batch_size,
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",  # Fixed: was evaluation_strategy
         save_strategy="epoch",
         logging_steps=100,
         load_best_model_at_end=True,
