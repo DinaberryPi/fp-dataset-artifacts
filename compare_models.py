@@ -11,8 +11,9 @@ print("=" * 80)
 
 # Load predictions
 print("\nLoading predictions...")
-baseline_path = r'c:\Users\dinah\Downloads\eval_predictions.jsonl'
-debiased_path = r'c:\Users\dinah\Desktop\Code\NLP\Final\fp-dataset-artifacts\debiase\eval_predictions_debiase.jsonl'
+# Phase 2: Use 100K predictions
+baseline_path = 'baseline_100k/eval_predictions.jsonl'
+debiased_path = 'debiased_model/eval_predictions.jsonl'
 
 baseline_preds = []
 print(f"Loading baseline from: {baseline_path}")

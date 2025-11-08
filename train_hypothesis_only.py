@@ -12,8 +12,8 @@ def main():
     # Training configuration
     output_dir = './hypothesis_only_model/'
     model_name = 'google/electra-small-discriminator'
-    max_train_samples = 5000
-    max_eval_samples = 500
+    max_train_samples = 100000  # Phase 2: 100K training
+    max_eval_samples = None      # Phase 2: Full validation (9,842)
     num_train_epochs = 3
     per_device_train_batch_size = 16
     
@@ -104,29 +104,47 @@ def main():
     
     trainer.train()
     
-    # Evaluate
+    # Evaluate and get predictions
     print("\n" + "=" * 80)
     print("EVALUATING HYPOTHESIS-ONLY MODEL...")
     print("=" * 80)
+    
+    # Get predictions
+    predictions_output = trainer.predict(eval_dataset_featurized)
     results = trainer.evaluate()
     
     print("\n" + "=" * 80)
-    print("RESULTS:")
-    print(f"Hypothesis-Only Accuracy: {results['eval_accuracy']:.2%}")
-    print("\nInterpretation:")
-    if results['eval_accuracy'] > 0.65:
-        print("⚠️  HIGH accuracy (>65%) - Strong artifacts detected!")
-        print("   The model can predict well without seeing the premise.")
-    elif results['eval_accuracy'] > 0.50:
-        print("⚠️  MODERATE accuracy (50-65%) - Some artifacts present")
-    else:
-        print("✓  LOW accuracy (<50%) - Fewer artifacts")
+    print("HYPOTHESIS-ONLY MODEL RESULTS")
+    print("=" * 80)
+    print(f"Accuracy: {results['eval_accuracy']:.4f} ({results['eval_accuracy']*100:.2f}%)")
+    print(f"Loss:     {results['eval_loss']:.4f}")
     print("=" * 80)
     
     # Save the model
     trainer.save_model()
     print(f"\nModel saved to: {output_dir}")
-    print("\nNext step: Use this model to debias the main model!")
+    
+    # Save evaluation metrics to JSON
+    import json
+    os.makedirs(output_dir, exist_ok=True)
+    
+    with open(os.path.join(output_dir, 'eval_metrics.json'), 'w', encoding='utf-8') as f:
+        json.dump(results, f, indent=2)
+    print(f"Metrics saved to: {os.path.join(output_dir, 'eval_metrics.json')}")
+    
+    # Save predictions to jsonl file
+    print("\nSaving predictions...")
+    
+    with open(os.path.join(output_dir, 'eval_predictions.jsonl'), 'w', encoding='utf-8') as f:
+        for i, example in enumerate(eval_dataset):
+            example_with_prediction = dict(example)
+            example_with_prediction['predicted_scores'] = predictions_output.predictions[i].tolist()
+            example_with_prediction['predicted_label'] = int(predictions_output.predictions[i].argmax())
+            f.write(json.dumps(example_with_prediction))
+            f.write('\n')
+    
+    print(f"Predictions saved to: {os.path.join(output_dir, 'eval_predictions.jsonl')}")
+    print("\n✓ Training complete!")
 
 if __name__ == "__main__":
     main()

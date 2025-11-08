@@ -84,8 +84,8 @@ def main():
     output_dir = './debiased_model/'
     bias_model_path = './hypothesis_only_model/'  # The artifact model we just trained
     model_name = 'google/electra-small-discriminator'
-    max_train_samples = 5000
-    max_eval_samples = 500
+    max_train_samples = 100000  # Phase 2: 100K training
+    max_eval_samples = None      # Phase 2: Full validation (9,842)
     num_train_epochs = 3
     per_device_train_batch_size = 16
     
@@ -188,38 +188,43 @@ def main():
     results = trainer.evaluate()
     
     print("\n" + "=" * 80)
-    print("DEBIASED MODEL RESULTS:")
-    print(f"Accuracy: {results['eval_accuracy']:.2%}")
-    print("\nComparison:")
-    print(f"  Baseline (full model):        76.09%")
-    print(f"  Hypothesis-only (artifacts):  59.40%")
-    print(f"  Debiased model:               {results['eval_accuracy']:.2%}")
-    print("\nExpectation:")
-    print("  - May have slightly lower overall accuracy")
-    print("  - But should be more robust (better on hard examples)")
-    print("  - Less reliant on artifacts")
+    print("DEBIASED MODEL RESULTS")
+    print("=" * 80)
+    print(f"Accuracy: {results['eval_accuracy']:.4f} ({results['eval_accuracy']*100:.2f}%)")
+    print(f"Loss:     {results['eval_loss']:.4f}")
     print("=" * 80)
     
     # Save model
     trainer.save_model()
     print(f"\nDebiased model saved to: {output_dir}")
     
+    # Save evaluation metrics to JSON
+    import json
+    os.makedirs(output_dir, exist_ok=True)
+    
+    with open(os.path.join(output_dir, 'eval_metrics.json'), 'w', encoding='utf-8') as f:
+        json.dump(results, f, indent=2)
+    print(f"Metrics saved to: {os.path.join(output_dir, 'eval_metrics.json')}")
+    
     # Save predictions for analysis
     print("\nSaving predictions for comparison...")
     predictions_output = trainer.predict(eval_dataset_featurized)
     
-    # Save predictions
-    import json
-    os.makedirs(output_dir, exist_ok=True)
+    # Get the eval dataset (handle None for max_eval_samples)
+    eval_examples = dataset['validation']
+    if max_eval_samples:
+        eval_examples = eval_examples.select(range(max_eval_samples))
+    
     with open(os.path.join(output_dir, 'eval_predictions.jsonl'), 'w', encoding='utf-8') as f:
-        for i, example in enumerate(dataset['validation'].select(range(max_eval_samples))):
+        for i, example in enumerate(eval_examples):
             pred_dict = dict(example)
             pred_dict['predicted_scores'] = predictions_output.predictions[i].tolist()
             pred_dict['predicted_label'] = int(predictions_output.predictions[i].argmax())
             f.write(json.dumps(pred_dict) + '\n')
     
     print(f"Predictions saved to: {output_dir}/eval_predictions.jsonl")
-    print("\nNext step: Compare debiased vs baseline predictions!")
+    print(f"Total predictions: {len(eval_examples)}")
+    print("\n✓ Training complete!")
 
 if __name__ == "__main__":
     main()
