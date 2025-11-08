@@ -37,14 +37,15 @@ class DebiasedTrainer(Trainer):
         outputs = model(**inputs)
         logits = outputs.get("logits")
         
-        # Compute standard cross-entropy loss (no reduction yet)
-        loss_fct = torch.nn.CrossEntropyLoss(reduction='none')
-        loss_per_example = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
-        
         # Get bias model predictions if available
+        weights = None
         if self.bias_model is not None:
             with torch.no_grad():
-                bias_outputs = self.bias_model(**inputs)
+                # Create a copy of inputs to avoid any gradient tracking issues
+                bias_inputs = {k: v.detach() if isinstance(v, torch.Tensor) else v 
+                              for k, v in inputs.items()}
+                
+                bias_outputs = self.bias_model(**bias_inputs)
                 bias_logits = bias_outputs.logits
                 bias_probs = torch.nn.functional.softmax(bias_logits, dim=-1)
                 
@@ -58,8 +59,19 @@ class DebiasedTrainer(Trainer):
                 # and weight ≈ 1.0 when bias_confidence is low
                 weights = 1.0 / (1.0 + bias_confidence)
                 
-                # Apply weights to loss
-                loss_per_example = loss_per_example * weights
+                # Convert to numpy and back to ensure no gradient connection
+                weights = torch.tensor(weights.cpu().numpy(), 
+                                     device=logits.device, 
+                                     dtype=logits.dtype,
+                                     requires_grad=False)
+        
+        # Compute standard cross-entropy loss (no reduction yet)
+        loss_fct = torch.nn.CrossEntropyLoss(reduction='none')
+        loss_per_example = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
+        
+        # Apply weights if computed
+        if weights is not None:
+            loss_per_example = loss_per_example * weights
         
         # Average the loss
         loss = loss_per_example.mean()

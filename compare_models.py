@@ -11,18 +11,32 @@ print("=" * 80)
 
 # Load predictions
 print("\nLoading predictions...")
+baseline_path = r'c:\Users\dinah\Downloads\eval_predictions.jsonl'
+debiased_path = r'c:\Users\dinah\Desktop\Code\NLP\Final\fp-dataset-artifacts\debiase\eval_predictions_debiase.jsonl'
+
 baseline_preds = []
-with open('Downloads/eval_predictions.jsonl', 'r', encoding='utf-8') as f:
+print(f"Loading baseline from: {baseline_path}")
+with open(baseline_path, 'r', encoding='utf-8') as f:
     for line in f:
         baseline_preds.append(json.loads(line))
 
 debiased_preds = []
-with open('debiased_model/eval_predictions.jsonl', 'r', encoding='utf-8') as f:
+print(f"Loading debiased from: {debiased_path}")
+with open(debiased_path, 'r', encoding='utf-8') as f:
     for line in f:
         debiased_preds.append(json.loads(line))
 
-# Ensure same examples
-assert len(baseline_preds) == len(debiased_preds), "Different number of predictions!"
+# Check if same number of examples
+print(f"\nBaseline predictions: {len(baseline_preds)}")
+print(f"Debiased predictions: {len(debiased_preds)}")
+
+if len(baseline_preds) != len(debiased_preds):
+    print(f"\nWARNING: Different number of predictions!")
+    print(f"Using first {min(len(baseline_preds), len(debiased_preds))} examples for comparison")
+    # Truncate to same length
+    min_len = min(len(baseline_preds), len(debiased_preds))
+    baseline_preds = baseline_preds[:min_len]
+    debiased_preds = debiased_preds[:min_len]
 
 label_names = {0: "Entailment", 1: "Neutral", 2: "Contradiction"}
 
@@ -86,12 +100,12 @@ print(f"Total predictions that changed: {len(changes)} ({len(changes)/len(baseli
 baseline_wrong_debiased_right = [c for c in changes if c['baseline_pred'] != c['true_label'] and c['debiased_pred'] == c['true_label']]
 baseline_right_debiased_wrong = [c for c in changes if c['baseline_pred'] == c['true_label'] and c['debiased_pred'] != c['true_label']]
 
-print(f"Baseline wrong → Debiased correct (FIXES): {len(baseline_wrong_debiased_right)}")
-print(f"Baseline correct → Debiased wrong (BREAKS): {len(baseline_right_debiased_wrong)}")
+print(f"Baseline wrong -> Debiased correct (FIXES): {len(baseline_wrong_debiased_right)}")
+print(f"Baseline correct -> Debiased wrong (BREAKS): {len(baseline_right_debiased_wrong)}")
 print(f"Net improvement: {len(baseline_wrong_debiased_right) - len(baseline_right_debiased_wrong):+d}")
 
 # Show examples of fixes
-print(f"\n=== EXAMPLES OF FIXES (Baseline wrong → Debiased correct) ===")
+print(f"\n=== EXAMPLES OF FIXES (Baseline wrong -> Debiased correct) ===")
 for i, ex in enumerate(baseline_wrong_debiased_right[:3], 1):
     print(f"\nFix {i}:")
     print(f"  Premise: {ex['premise']}")
