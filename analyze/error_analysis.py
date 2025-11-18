@@ -1,12 +1,17 @@
 import json
 from collections import defaultdict, Counter
 import re
+import os
+
+# Get the project root directory (parent of analyze/)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_dir)
 
 # Load predictions
 print("Loading predictions...")
 predictions = []
 # Phase 2: Use 100K baseline predictions
-predictions_path = '../outputs/evaluations/baseline_100k/eval_predictions.jsonl'
+predictions_path = os.path.join(project_root, 'outputs', 'evaluations', 'baseline_100k', 'eval_predictions.jsonl')
 with open(predictions_path, 'r', encoding='utf-8') as f:
     for line in f:
         predictions.append(json.loads(line))
