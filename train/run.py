@@ -1,10 +1,19 @@
-import datasets
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, \
-    AutoModelForQuestionAnswering, Trainer, TrainingArguments, HfArgumentParser
-import evaluate
 import os
 import sys
 import json
+
+# Disable external logging integrations (e.g., Weights & Biases) by default
+os.environ.setdefault('WANDB_DISABLED', 'true')
+os.environ.setdefault('WANDB_MODE', 'disabled')
+os.environ.setdefault('WANDB_SILENT', 'true')
+os.environ.setdefault('HF_HUB_DISABLE_TELEMETRY', '1')
+
+import datasets
+from datasets import logging as ds_logging
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, \
+    AutoModelForQuestionAnswering, Trainer, TrainingArguments, HfArgumentParser
+from transformers import logging as hf_logging
+import evaluate
 
 # Add parent directory to path for helpers import
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -51,25 +60,42 @@ def main():
                       help='Limit the number of examples to train on.')
     argp.add_argument('--max_eval_samples', type=int, default=None,
                       help='Limit the number of examples to evaluate on.')
+    argp.add_argument('--quiet', action='store_true', default=False,
+                      help='Suppress console logs and progress bars.')
 
     training_args, args = argp.parse_args_into_dataclasses()
+    quiet = getattr(args, 'quiet', False)
+    log = (lambda *a, **k: None) if quiet else print
+
+    # Ensure no external reporters (like W&B) are used
+    training_args.report_to = []
+
+    if quiet:
+        training_args.disable_tqdm = True
+        hf_logging.set_verbosity_error()
+        ds_logging.set_verbosity_error()
+        ds_logging.disable_progress_bar()
+    else:
+        hf_logging.set_verbosity_warning()
+        ds_logging.set_verbosity_warning()
 
     # Dataset selection
     # IMPORTANT: this code path allows you to load custom datasets different from the standard SQuAD or SNLI ones.
     # You need to format the dataset appropriately. For SNLI, you can prepare a file with each line containing one
     # example as follows:
     # {"premise": "Two women are embracing.", "hypothesis": "The sisters are hugging.", "label": 1}
-    if args.dataset.endswith('.json') or args.dataset.endswith('.jsonl'):
+    dataset_arg = getattr(args, 'dataset', None)
+    if dataset_arg and (dataset_arg.endswith('.json') or dataset_arg.endswith('.jsonl')):
         dataset_id = None
         # Load from local json/jsonl file
-        dataset = datasets.load_dataset('json', data_files=args.dataset)
+        dataset = datasets.load_dataset('json', data_files=dataset_arg)
         # By default, the "json" dataset loader places all examples in the train split,
         # so if we want to use a jsonl file for evaluation we need to get the "train" split
         # from the loaded dataset
         eval_split = 'train'
     else:
         default_datasets = {'qa': ('squad',), 'nli': ('snli',)}
-        dataset_id = tuple(args.dataset.split(':')) if args.dataset is not None else \
+        dataset_id = tuple(dataset_arg.split(':')) if dataset_arg is not None else \
             default_datasets[args.task]
         # MNLI has two validation splits (one with matched domains and one with mismatched domains). Most datasets just have one "validation" split
         eval_split = 'validation_matched' if dataset_id == ('glue', 'mnli') else 'validation'
@@ -103,7 +129,7 @@ def main():
     else:
         raise ValueError('Unrecognized task name: {}'.format(args.task))
 
-    print("Preprocessing data... (this takes a little bit, should only happen once per dataset)")
+    log("Preprocessing data... (this takes a little bit, should only happen once per dataset)")
     if dataset_id == ('snli',):
         # remove SNLI examples with no label
         dataset = dataset.filter(lambda ex: ex['label'] != -1)
@@ -189,8 +215,8 @@ def main():
         # If you do this your custom prediction_step should probably start by calling super().prediction_step and modifying the
         # values that it returns.
 
-        print('Evaluation results:')
-        print(results)
+        log('Evaluation results:')
+        log(results)
 
         os.makedirs(training_args.output_dir, exist_ok=True)
 
