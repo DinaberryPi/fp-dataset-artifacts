@@ -1,0 +1,14 @@
+\section{Conclusion}
+
+In this project, we investigated dataset artifacts in the SNLI benchmark and explored methods to mitigate their impact. Our hypothesis-only model achieved 60.80\% accuracy, far above the random baseline, confirming the presence of strong annotation artifacts in SNLI. These artifacts allow models to make correct predictions without genuine reasoning about the relationship between premise and hypothesis.
+
+We implemented confidence-based reweighting to reduce the model's reliance on these artifacts. Although overall accuracy decreased slightly (from 86.54\% to 86.42\%), the debiased model showed substantial improvements on challenging examples, particularly those containing negation words (4.76 percentage point gain). The debiased model also produced better-calibrated predictions, reducing the over-prediction of contradiction for negation examples from 3.9 to 1.4 percentage points.
+
+Our analysis demonstrates that successful debiasing involves a trade-off: giving up some in-domain accuracy in exchange for more robust reasoning. The modest overall accuracy drop is acceptable, and even desirable, if the model becomes less reliant on spurious patterns and more capable of genuine language understanding.
+
+\subsection{Limitations and Future Work}
+
+This work has several limitations. First, we only tested on the in-domain SNLI validation set. A stronger evaluation would include out-of-domain test sets like adversarial examples or contrast sets, where we would expect the debiased model to show larger improvements. Second, we only implemented one debiasing method. Exploring other approaches like focal loss, example reweighting based on dataset cartography, or adversarial training could yield further insights.
+
+Future work could extend this analysis in several directions: (1) evaluating on out-of-domain test sets to better quantify robustness gains, (2) combining multiple debiasing techniques, (3) analyzing which specific linguistic patterns the models learn before and after debiasing, and (4) testing whether the improvements transfer to other NLI datasets like MultiNLI.
+

@@ -82,6 +82,7 @@ def main():
         num_train_epochs=num_train_epochs,
         per_device_train_batch_size=per_device_train_batch_size,
         per_device_eval_batch_size=per_device_train_batch_size,
+        learning_rate=2e-5,  # Match baseline model learning rate
         eval_strategy="epoch",  # Fixed: was evaluation_strategy
         save_strategy="epoch",
         logging_steps=100,

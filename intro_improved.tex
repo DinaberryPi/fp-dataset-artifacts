@@ -1,0 +1,19 @@
+\section{Introduction}
+
+Natural Language Inference (NLI) is a fundamental task in natural language understanding, where models must determine whether a hypothesis logically follows from, contradicts, or is neutral with respect to a given premise. The SNLI dataset \citet{bowman-etal-2015-large} has been widely used to train and evaluate NLI systems, with modern pre-trained models achieving impressive accuracy scores above 90\%.
+
+However, recent work has raised concerns about whether these high-performing models are truly solving NLI or simply exploiting shortcuts present in the datasets themselves. \citet{poliak-etal-2018-hypothesis} demonstrated that hypothesis-only models, which see only the hypothesis without the premise, can achieve surprisingly high accuracy on NLI benchmarks. This suggests that datasets contain annotation artifacts: systematic patterns that allow models to predict labels without proper reasoning.
+
+In this project, we investigate the extent of dataset artifacts in SNLI and explore methods to mitigate their impact. Specifically, we:
+\begin{enumerate}
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{2pt}
+\setlength{\topsep}{4pt}
+    \item Train a hypothesis-only model to detect and quantify artifacts in SNLI
+    \item Implement a confidence-based reweighting debiasing approach
+    \item Analyze how debiasing affects model performance on different subsets of data, particularly on examples with negation words
+    \item Examine the trade-off between in-domain accuracy and model robustness
+\end{enumerate}
+
+Our experiments confirm the presence of strong artifacts in SNLI, with the hypothesis-only model achieving 60.80\% accuracy. We show that confidence-based reweighting can reduce the model's reliance on these artifacts, leading to more robust predictions on challenging examples.
+
