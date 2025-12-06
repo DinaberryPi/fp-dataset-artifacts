@@ -2,13 +2,15 @@
 
 \subsection{Dataset}
 
-We use the Stanford Natural Language Inference (SNLI) dataset \citet{bowman-etal-2015-large}, which consists of 570,000 human-annotated sentence pairs. Each pair includes a premise and a hypothesis, labeled as \textit{entailment}, \textit{neutral}, or \textit{contradiction}. For our experiments, we use 100,000 training examples (approximately 17.5\% of the full training set) and evaluate on the full validation set of 9,842 examples.
+We use the Stanford Natural Language Inference (SNLI) dataset \citet{bowman-etal-2015-large}, which consists of 570,000 human-annotated sentence pairs. Each pair includes a premise and a hypothesis, labeled as \textit{entailment}, \textit{neutral}, or \textit{contradiction}. The SNLI dataset is split into training, validation, and test sets with approximately 550,000, 9,842, and 9,824 examples respectively.
+
+For our experiments, we use 100,000 training examples (approximately 17.5\% of the full training set) for model training. During training, we evaluate on the validation set after each epoch to monitor performance. All reported results are based on evaluation on the full validation set of 9,842 examples. We do not use the test set in our experiments.
 
 The SNLI dataset was constructed by showing crowd workers a premise sentence and asking them to write three hypotheses: one that is definitely true given the premise (entailment), one that might be true (neutral), and one that is definitely false (contradiction). This construction process can introduce systematic biases. For example, workers might use negation words more frequently when writing contradictions or use generic language for neutral hypotheses.
 
 \subsection{Experimental Setup}
 
-Our experiments involve training three models with different configurations:
+Our experiments involve training three models that differ in their input processing and training methodology:
 
 \subsubsection{Baseline Model}
 
@@ -32,31 +34,10 @@ We then train the main model using this reweighted loss:
 \begin{equation}
     \mathcal{L} = \sum_{i=1}^{N} w_i \cdot \text{CE}(y_i, \hat{y}_i)
 \end{equation}
-where CE denotes cross-entropy loss. Figure~\ref{fig:debiasing} illustrates the complete debiasing architecture.
+where CE denotes cross-entropy loss. Figure~\ref{fig: debiasing} illustrates the complete debiasing architecture.
 
 \subsection{Training Configuration}
 
-Table~\ref{tab:hyperparameters} shows the hyperparameters used for all experiments. We use the AdamW optimizer with a learning rate of 2e-5 and train for 3 epochs. All models use a batch size of 16 to ensure fair comparison. All models are trained using Google Colab with GPU acceleration. 
+Table~\ref{tab :hyperparameters} shows the hyperparameters used for all experiments. We use the AdamW optimizer with a learning rate of 2e-5 and train for 3 epochs. All models use a batch size of 16. All models are trained using Google Colab with GPU acceleration.
 
-During training, we evaluate models on the validation set (9,842 examples) after each epoch. We use the checkpoint with the highest validation accuracy for final evaluation (via \texttt{load\_best\_model\_at\_end=True}). This ensures we select the best-performing model across all epochs rather than simply using the final epoch's model.
-
-\begin{table}[h]
-\centering
-\begin{tabular}{ll}
-\toprule
-\textbf{Hyperparameter} & \textbf{Value} \\
-\midrule
-Model & ELECTRA-small \\
-Training examples & 100,000 \\
-Validation examples & 9,842 \\
-Batch size & 16 \\
-Learning rate & 2e-5 \\
-Epochs & 3 \\
-Optimizer & AdamW \\
-Max sequence length & 128 \\
-\bottomrule
-\end{tabular}
-\caption{Training hyperparameters for all experiments.}
-\label{tab:hyperparameters}
-\end{table}
-
+\input{latex/input/hyperparameter}

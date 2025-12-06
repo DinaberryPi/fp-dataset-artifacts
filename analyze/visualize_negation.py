@@ -19,12 +19,12 @@ plt.rcParams['font.serif'] = ['Times New Roman', 'Times', 'DejaVu Serif']
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(script_dir)
 
-# Professional color palette
+# Professional color palette (using the three-color scheme)
 colors_palette = {
     'baseline': '#82B0D2',    # Light Blue/Sky Blue
     'debiased': '#8ECFC9',    # Light Teal/Aqua
-    'true': '#34495e',        # Dark Gray (for true labels)
-    'coral': '#FA7F6F'        # Coral/Salmon Pink (optional)
+    'true': '#FA7F6F',        # Coral/Salmon Pink (red tone for true labels)
+    'coral': '#FA7F6F'        # Coral/Salmon Pink
 }
 
 # Load predictions

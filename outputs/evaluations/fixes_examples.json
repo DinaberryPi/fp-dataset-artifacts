@@ -1,0 +1,82 @@
+[
+  {
+    "index": 8,
+    "premise": "A man selling donuts to a customer during a world exhibition event held in the city of Angeles",
+    "hypothesis": "A man selling donuts to a customer.",
+    "true_label": 0,
+    "baseline_pred": 1,
+    "debiased_pred": 0
+  },
+  {
+    "index": 31,
+    "premise": "A senior is waiting at the window of a restaurant that serves sandwiches.",
+    "hypothesis": "A man is waiting in line for the bus.",
+    "true_label": 2,
+    "baseline_pred": 1,
+    "debiased_pred": 2
+  },
+  {
+    "index": 161,
+    "premise": "Street performer with bowler hat and high boots performs outside.",
+    "hypothesis": "The man is performing a magic act.",
+    "true_label": 1,
+    "baseline_pred": 2,
+    "debiased_pred": 1
+  },
+  {
+    "index": 186,
+    "premise": "Number 916 is hoping that he is going to win the race.",
+    "hypothesis": "A person is betting that he will win  the race.",
+    "true_label": 1,
+    "baseline_pred": 0,
+    "debiased_pred": 1
+  },
+  {
+    "index": 226,
+    "premise": "An older gentleman enjoys a scenic stroll through the countryside.",
+    "hypothesis": "An old man searches for a good place to die.",
+    "true_label": 1,
+    "baseline_pred": 2,
+    "debiased_pred": 1
+  },
+  {
+    "index": 380,
+    "premise": "A woman is using clothespins to hang up laundry outside on a laundry line.",
+    "hypothesis": "A woman is folding her washed laundry.",
+    "true_label": 2,
+    "baseline_pred": 1,
+    "debiased_pred": 2
+  },
+  {
+    "index": 412,
+    "premise": "This mother and her daughter and granddaughter are having car trouble, and the poor little girl looks hot out in the heat.",
+    "hypothesis": "The mother, daughter, and granddaughter are out in the middle of the day.",
+    "true_label": 1,
+    "baseline_pred": 0,
+    "debiased_pred": 1
+  },
+  {
+    "index": 433,
+    "premise": "Dog herding cows",
+    "hypothesis": "The dogs are trying to get the cows inside a barn.",
+    "true_label": 1,
+    "baseline_pred": 2,
+    "debiased_pred": 1
+  },
+  {
+    "index": 443,
+    "premise": "A hispanic fruit market with many different fruits and vegetables in view on a city street with a man passing the store dressed in dark pants and a hoodie.",
+    "hypothesis": "A fruit market is selling vegetables",
+    "true_label": 0,
+    "baseline_pred": 1,
+    "debiased_pred": 0
+  },
+  {
+    "index": 470,
+    "premise": "Three children dressed in winter clothes are walking through the woods while pushing cargo along.",
+    "hypothesis": "Three children are dressed in warm winter clothes.",
+    "true_label": 0,
+    "baseline_pred": 1,
+    "debiased_pred": 0
+  }
+]
