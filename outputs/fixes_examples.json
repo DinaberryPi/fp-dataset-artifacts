@@ -1,0 +1,82 @@
+[
+  {
+    "index": 171,
+    "premise": "A man and a woman are looking at produce on display.",
+    "hypothesis": "Two men throw produce at each other for fun.",
+    "true_label": 2,
+    "baseline_pred": 1,
+    "debiased_pred": 2
+  },
+  {
+    "index": 174,
+    "premise": "People are throwing tomatoes at each other.",
+    "hypothesis": "The men are covered in tomatoes.",
+    "true_label": 1,
+    "baseline_pred": 0,
+    "debiased_pred": 1
+  },
+  {
+    "index": 184,
+    "premise": "A small ice cream stand with two people standing near it.",
+    "hypothesis": "Two people in line to buy icecream.",
+    "true_label": 1,
+    "baseline_pred": 2,
+    "debiased_pred": 1
+  },
+  {
+    "index": 186,
+    "premise": "Number 916 is hoping that he is going to win the race.",
+    "hypothesis": "A person is betting that he will win  the race.",
+    "true_label": 1,
+    "baseline_pred": 0,
+    "debiased_pred": 1
+  },
+  {
+    "index": 226,
+    "premise": "An older gentleman enjoys a scenic stroll through the countryside.",
+    "hypothesis": "An old man searches for a good place to die.",
+    "true_label": 1,
+    "baseline_pred": 2,
+    "debiased_pred": 1
+  },
+  {
+    "index": 258,
+    "premise": "Four guys with guns and army gear.",
+    "hypothesis": "The four guys are in the army.",
+    "true_label": 1,
+    "baseline_pred": 0,
+    "debiased_pred": 1
+  },
+  {
+    "index": 280,
+    "premise": "Two male police officers on patrol, wearing the normal gear and bright green reflective shirts.",
+    "hypothesis": "The officers have shot an unarmed black man and will not go to prison for it.",
+    "true_label": 2,
+    "baseline_pred": 1,
+    "debiased_pred": 2
+  },
+  {
+    "index": 316,
+    "premise": "A man with a beard skateboarding and a boy with a blue and black backpack riding a green bike in the background.",
+    "hypothesis": "There is a man with a gray beard skateboarding.",
+    "true_label": 1,
+    "baseline_pred": 2,
+    "debiased_pred": 1
+  },
+  {
+    "index": 357,
+    "premise": "Two boys stand in an ocean as the sun sets.",
+    "hypothesis": "The boys are surfing",
+    "true_label": 1,
+    "baseline_pred": 2,
+    "debiased_pred": 1
+  },
+  {
+    "index": 380,
+    "premise": "A woman is using clothespins to hang up laundry outside on a laundry line.",
+    "hypothesis": "A woman is folding her washed laundry.",
+    "true_label": 2,
+    "baseline_pred": 1,
+    "debiased_pred": 2
+  }
+]
